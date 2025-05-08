@@ -7,11 +7,11 @@ const loginInputPin = document.querySelector('.login__input--pin');
 const seedTestUsers = async () => {
   console.log('Attempting to seed test users...');
   try {
-    const response = await fetch('http://localhost:3001/api/seed', {
+    const response = await fetch('https://mo-money-sal2.onrender.com', {
       method: 'POST',
       headers: {
-        'Content-Type': 'application/json'
-      }
+        'Content-Type': 'application/json',
+      },
     });
 
     const data = await response.json();
@@ -41,12 +41,12 @@ async function handleLogin(e) {
   }
 
   try {
-    const response = await fetch('http://localhost:3001/api/users/login', {
+    const response = await fetch('https://mo-money-sal2.onrender.com', {
       method: 'POST',
       headers: {
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ username, pin })
+      body: JSON.stringify({ username, pin }),
     });
 
     const data = await response.json();
