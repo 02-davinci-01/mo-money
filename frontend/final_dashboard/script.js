@@ -1,3 +1,4 @@
+// Start the app when DOM is loaded
 'use strict';
 
 /////////////////////////////////////////////////
@@ -18,6 +19,7 @@ const btnTransfer = document.querySelector('.form__btn--transfer');
 const btnLoan = document.querySelector('.form__btn--loan');
 const btnClose = document.querySelector('.form__btn--close');
 const btnSort = document.querySelector('.btn--sort');
+const btnAIAnalysis = document.querySelector('.btn--ai-analysis'); // Ensure this element exists in your HTML
 
 const inputLoginUsername = document.querySelector('.login__input--user');
 const inputLoginPin = document.querySelector('.login__input--pin');
@@ -83,9 +85,9 @@ const displayMovements = function (movements, dates, categories, sort = false) {
 
     const html = `
       <div class="movements__row">
-        <div class="movements__type movements__type--${type}">${movs.length - i} ${type}</div>
-        <div class="movements__date">${date}</div>
-        <div class="movements__category" style="background-color: ${categoryColor}20; border-color: ${categoryColor}40; color: ${categoryColor}">${category}</div>
+        <div class="movements__type movements__type--<span class="math-inline">\{type\}"\></span>{movs.length - i} <span class="math-inline">\{type\}</div\>
+<div class\="movements\_\_date"\></span>{date}</div>
+        <div class="movements__category" style="background-color: ${categoryColor}20; border-color: ${categoryColor}40; color: <span class="math-inline">\{categoryColor\}"\></span>{category}</div>
         <div class="movements__value">${mov}₹</div>
       </div>
     `;
@@ -243,13 +245,13 @@ const updateMoneyPersonality = function(personalityType) {
   const personalityImage = document.getElementById('personalityImage');
   const personalityTypeElement = document.getElementById('personalityType');
   const personalityDescription = document.getElementById('personalityDescription');
-  
+
   // Update image source
   personalityImage.src = `money_personality/${personalityType.toLowerCase()}.png`;
-  
+
   // Update personality type text
   personalityTypeElement.textContent = `the ${personalityType}`;
-  
+
   // Update description based on personality type
   const descriptions = {
     strategeist: 'You are a strategic planner who carefully considers financial decisions. You excel at long-term planning and making calculated investments.',
@@ -257,7 +259,7 @@ const updateMoneyPersonality = function(personalityType) {
     socialite: 'You are a social spender who enjoys sharing experiences with others. You value relationships and experiences over material possessions.',
     scholar: 'You are a knowledge-driven spender who invests in learning and personal growth. You make informed decisions based on research and analysis.'
   };
-  
+
   personalityDescription.textContent = descriptions[personalityType.toLowerCase()] || 'Your spending personality has been analyzed.';
 };
 
@@ -275,7 +277,7 @@ const handleTransfer = async function(e) {
   }
 
   try {
-    const response = await fetch('http://localhost:3001/api/transactions/transfer', {
+    const response = await fetch('https://mo-money-sal2.onrender.com/api/transactions/transfer', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -310,7 +312,7 @@ const handleLoan = async function(e) {
   }
 
   try {
-    const response = await fetch('http://localhost:3001/api/transactions/loan', {
+    const response = await fetch('https://mo-money-sal2.onrender.com/api/transactions/loan', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -334,9 +336,9 @@ const handleLoan = async function(e) {
 
 const handleCloseAccount = async function(e) {
   e.preventDefault();
-  
+
   try {
-    const response = await fetch('http://localhost:3001/api/close-account', {
+    const response = await fetch('https://mo-money-sal2.onrender.com/api/close-account', {
       method: 'DELETE',
       headers: {
         'Authorization': `Bearer ${localStorage.getItem('token')}`
@@ -349,7 +351,7 @@ const handleCloseAccount = async function(e) {
 
     localStorage.removeItem('token');
     localStorage.removeItem('userData');
-    window.location.href = 'http://localhost:3001/login.html';
+    window.location.href = 'https://mo-money-sal2.onrender.com/login.html'; // Updated URL
   } catch (error) {
     console.error('Close account error:', error);
     alert(error.message || 'Failed to close account');
@@ -367,15 +369,15 @@ const handleSort = function(e) {
 
 const handleAIAnalysis = async function(e) {
   e.preventDefault();
-  
+
   // Show loading state
   document.querySelector('.ai-insights').style.display = 'block';
   document.querySelector('.ai-insights__loading').style.display = 'flex';
   document.querySelector('.ai-insights__content').style.display = 'none';
-  
+
   try {
     // Fetch fresh user data from server
-    const userResponse = await fetch('http://localhost:3001/api/user', {
+    const userResponse = await fetch('https://mo-money-sal2.onrender.com/api/user', {
       headers: {
         'Authorization': `Bearer ${localStorage.getItem('token')}`
       }
@@ -391,31 +393,31 @@ const handleAIAnalysis = async function(e) {
     }
 
     // Send data for AI analysis
-   const transactionsToSend = userData.user.movements.map(
-     (movement, index) => ({
-       movement: movement,
-       date: userData.user.movementsDates[index],
-       category: userData.user.categories[index],
-     })
-   );
+    const transactionsToSend = userData.user.movements.map(
+      (movement, index) => ({
+        movement: movement,
+        date: userData.user.movementsDates[index],
+        category: userData.user.categories[index],
+      })
+    );
 
-   const response = await fetch('http://localhost:3001/api/ai/analyze', {
-     method: 'POST',
-     headers: {
-       'Content-Type': 'application/json',
-       Authorization: `Bearer ${localStorage.getItem('token')}`,
-     },
-     body: JSON.stringify({
-       transactions: transactionsToSend, // Now 'transactions' is an array
-     }),
-   });
+    const response = await fetch('https://mo-money-sal2.onrender.com/api/ai/analyze', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${localStorage.getItem('token')}`,
+      },
+      body: JSON.stringify({
+        transactions: transactionsToSend, // Now 'transactions' is an array
+      }),
+    });
 
     if (!response.ok) {
       throw new Error('Analysis failed');
     }
 
     const data = await response.json();
-    
+
     // Update personality section
     updateMoneyPersonality(data.spenderType);
     document.getElementById('spenderType').textContent = data.spenderDescription;
@@ -423,11 +425,11 @@ const handleAIAnalysis = async function(e) {
       .map(rec => `<li>${rec}</li>`)
       .join('');
     document.getElementById('spendingTrends').textContent = data.trends;
-    
+
     // Hide loading and show content
     document.querySelector('.ai-insights__loading').style.display = 'none';
     document.querySelector('.ai-insights__content').style.display = 'block';
-    
+
   } catch (error) {
     console.error('AI Analysis error:', error);
     alert(error.message || 'Analysis failed');
@@ -442,22 +444,25 @@ const handleAIAnalysis = async function(e) {
 const initApp = async () => {
   const token = localStorage.getItem('token');
   const userData = localStorage.getItem('userData');
-  
+
   if (!token || !userData) {
-    window.location.href = 'http://localhost:3001/login.html';
+    window.location.href = 'https://mo-money-sal2.onrender.com/login.html'; // Updated URL
     return;
   }
 
   try {
     // Initialize charts first
     initCharts();
-    
+
     // Fetch user data
-    const response = await fetch('http://localhost:3001/api/user', {
-      headers: {
-        'Authorization': `Bearer ${token}`
+    const response = await fetch(
+      'https://mo-money-sal2.onrender.com/api/user',
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
       }
-    });
+    );
 
     if (!response.ok) {
       throw new Error('Failed to fetch user data');
@@ -465,26 +470,31 @@ const initApp = async () => {
 
     const data = await response.json();
     const userData = data.user;
-    
+
     // Show the app
     document.querySelector('.app').style.opacity = 100;
-    
+
     // Update UI with user data after charts are initialized
     updateUI(userData);
-    
+
     // Add event listeners
-    document.querySelector('.form--transfer').addEventListener('submit', handleTransfer);
-    document.querySelector('.form--loan').addEventListener('submit', handleLoan);
-    document.querySelector('.form--close').addEventListener('submit', handleCloseAccount);
+    document
+      .querySelector('.form--transfer')
+      .addEventListener('submit', handleTransfer);
+    document
+      .querySelector('.form--loan')
+      .addEventListener('submit', handleLoan);
+    document
+      .querySelector('.form--close')
+      .addEventListener('submit', handleCloseAccount);
     document.querySelector('.btn--sort').addEventListener('click', handleSort);
-    document.querySelector('.btn--ai-analysis').addEventListener('click', handleAIAnalysis);
-    
+    document
+      .querySelector('.btn--ai-analysis')
+      .addEventListener('click', handleAIAnalysis);
   } catch (error) {
     console.error('Initialization error:', error);
     alert('Failed to load dashboard. Please try logging in again.');
     window.location.href = 'http://localhost:3001/login.html';
   }
 };
-
-// Start the app when DOM is loaded
 document.addEventListener('DOMContentLoaded', initApp);
