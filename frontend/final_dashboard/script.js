@@ -37,6 +37,7 @@ let categoryChart = null;
 /////////////////////////////////////////////////
 // Utility Functions
 
+// Fix for the displayMovements function
 const displayMovements = function (movements, dates, categories, sort = false) {
   containerMovements.innerHTML = '';
 
@@ -85,9 +86,9 @@ const displayMovements = function (movements, dates, categories, sort = false) {
 
     const html = `
       <div class="movements__row">
-        <div class="movements__type movements__type--<span class="math-inline">\{type\}"\></span>{movs.length - i} <span class="math-inline">\{type\}</div\>
-<div class\="movements\_\_date"\></span>{date}</div>
-        <div class="movements__category" style="background-color: ${categoryColor}20; border-color: ${categoryColor}40; color: <span class="math-inline">\{categoryColor\}"\></span>{category}</div>
+        <div class="movements__type movements__type--${type}">${movs.length - i} ${type}</div>
+        <div class="movements__date">${date}</div>
+        <div class="movements__category" style="background-color: ${categoryColor}20; border-color: ${categoryColor}40; color: ${categoryColor}">${category}</div>
         <div class="movements__value">${mov}₹</div>
       </div>
     `;
@@ -95,7 +96,6 @@ const displayMovements = function (movements, dates, categories, sort = false) {
     containerMovements.insertAdjacentHTML('beforeend', html);
   }
 };
-
 const calcDisplayBalance = function (movements) {
   const balance = movements.reduce((acc, mov) => acc + mov, 0);
   labelBalance.textContent = `${balance}₹`;
@@ -388,6 +388,7 @@ const handleAIAnalysis = async function(e) {
     }
 
     const userData = await userResponse.json();
+    console.log(userData);
     if (!userData.user || !userData.user.movements || !userData.user.movementsDates || !userData.user.categories) {
       throw new Error('Transaction data not available');
     }
