@@ -7,12 +7,15 @@ const loginInputPin = document.querySelector('.login__input--pin');
 const seedTestUsers = async () => {
   console.log('Attempting to seed test users...');
   try {
-    const response = await fetch('https://mo-money-sal2.onrender.com', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    });
+    const response = await fetch(
+      'https://mo-money-sal2.onrender.com/api/seed',
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      }
+    );
 
     const data = await response.json();
     if (response.ok) {
@@ -31,7 +34,7 @@ seedTestUsers();
 // Event Handlers
 async function handleLogin(e) {
   e.preventDefault();
-  
+
   const username = document.getElementById('username').value;
   const pin = document.getElementById('pin').value;
 
@@ -41,13 +44,16 @@ async function handleLogin(e) {
   }
 
   try {
-    const response = await fetch('https://mo-money-sal2.onrender.com', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ username, pin }),
-    });
+    const response = await fetch(
+      'https://mo-money-sal2.onrender.com/api/users/login',
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ username, pin }),
+      }
+    );
 
     const data = await response.json();
 
@@ -55,9 +61,9 @@ async function handleLogin(e) {
       // Store token and user data
       localStorage.setItem('token', data.token);
       localStorage.setItem('userData', JSON.stringify(data.user));
-      
+
       // Redirect to dashboard
-      window.location.href = 'http://localhost:3001/dashboard';
+      window.location.href = 'https://mo-money-sal2.onrender.com/dashboard'; // Updated for Render
     } else {
       alert(data.message || 'Login failed');
     }
@@ -68,4 +74,4 @@ async function handleLogin(e) {
 }
 
 // Add event listener to login form
-document.querySelector('.login__form').addEventListener('submit', handleLogin); 
+document.querySelector('.login__form').addEventListener('submit', handleLogin);
