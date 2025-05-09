@@ -90,6 +90,8 @@ const ensureFirebaseInitialized = () => {
   return true;
 };
 
+ensureFirebaseInitialized();
+
 const response = await fetch(
   'https://mo-money-sal2.onrender.com/api/users/login',
   {
@@ -261,6 +263,7 @@ if (sendCodeBtn) {
         appVerifier
       );
       window.confirmationResult = confirmationResult;
+      console.log('Verification code sent');
       if (verificationSection) {
         verificationSection.style.display = 'block';
       }
