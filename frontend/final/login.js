@@ -76,6 +76,18 @@ const generateRecaptcha = () => {
   });
 };
 
+const response = await fetch(
+  'https://mo-money-sal2.onrender.com/api/users/login',
+  {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ username, pin }),
+    credentials: 'omit', // Try omitting credentials
+  }
+);
+
 // Event Handlers
 async function handleLogin(e) {
   e.preventDefault();
