@@ -542,6 +542,76 @@ app.post('/api/transactions/transfer', auth, async (req, res) => {
   }
 });
 
+app.post('/api/transactions/loan', auth, async (req, res) => {
+  try {
+    const { amount } = req.body;
+    const userId = req.user.id;
+
+    console.log('Loan request:', { userId, amount });
+
+    // Validate amount
+    if (!amount || amount <= 0) {
+      return res.status(400).json({ message: 'Invalid loan amount' });
+    }
+
+    // Find the user
+    const user = await User.findById(userId);
+
+    if (!user) {
+      console.log('User not found:', userId);
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    // Calculate current balance
+    const currentBalance = user.movements.reduce((acc, mov) => acc + mov, 0);
+
+    // Check if the user has at least 10% of the requested loan amount
+    const requiredBalance = amount * 0.1;
+    if (currentBalance < requiredBalance) {
+      return res.status(400).json({
+        message: `Loan request denied. You need at least ₹${requiredBalance} in your account to request a loan of ₹${amount}.`,
+      });
+    }
+
+    // Approve the loan and update the user's account
+    const loanDate = new Date().toISOString();
+    user.movements.push(amount);
+    user.movementsDates.push(loanDate);
+    user.categories.push('loan'); // Or 'deposit' depending on how you categorize loans
+    await user.save();
+
+    // Force a fresh read from the database
+    const updatedUser = await User.findById(userId).lean();
+    const updatedBalance = updatedUser.movements.reduce((acc, mov) => acc + mov, 0);
+
+    console.log('Loan approved:', {
+      username: updatedUser.username,
+      loanAmount: amount,
+      newBalance: updatedBalance,
+      movements: updatedUser.movements,
+      lastMovement: updatedUser.movements[updatedUser.movements.length - 1],
+    });
+
+    // Return the updated user data
+    res.status(200).json({
+      message: 'Loan request approved',
+      user: {
+        id: updatedUser._id,
+        owner: updatedUser.owner,
+        username: updatedUser.username,
+        movements: updatedUser.movements,
+        movementsDates: updatedUser.movementsDates,
+        categories: updatedUser.categories,
+        interestRate: updatedUser.interestRate,
+        balance: updatedBalance,
+      },
+    });
+  } catch (error) {
+    console.error('Loan request error:', error);
+    res.status(500).json({ message: 'Error processing loan request' });
+  }
+});
+
 // AI Analysis endpoint
 app.post('/api/ai/analyze', auth, async (req, res) => {
   try {
