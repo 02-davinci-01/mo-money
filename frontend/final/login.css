@@ -158,4 +158,137 @@ body {
   .logo {
     height: 3.5rem;
   }
-} 
+}
+
+/* --- New Styles Added for 2FA --- */
+
+/* Phone Number Input */
+#phoneNumber {
+  width: 100%;
+  padding: 1.5rem; /* Match existing input padding */
+  font-size: 1.6rem; /* Match existing input font-size */
+  font-family: inherit;
+  color: inherit;
+  border: 1px solid #ddd;
+  border-radius: 0.8rem;
+  transition: all 0.3s;
+  background-color: var(--color-light);
+  margin-top: 1rem; /* Match existing input margin-top */
+  margin-bottom: 2.5rem; /* Match existing form-group margin-bottom */
+}
+
+#phoneNumber:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 0.4rem var(--color-primary-opacity);
+}
+
+#phoneNumber::placeholder {
+  color: #999;
+}
+
+/* Send Code Button */
+#sendCodeBtn {
+  width: 100%;
+  padding: 1.5rem; /* Match existing button padding */
+  font-size: 1.6rem; /* Match existing button font-size */
+  font-weight: 500;
+  color: var(--color-white);
+  background-color: var(--color-primary);
+  border: none;
+  border-radius: 0.8rem;
+  cursor: pointer;
+  transition: all 0.3s;
+  margin-top: 1rem; /* Match existing button margin-top */
+  margin-bottom: 2.5rem; /* Adjust as needed */
+}
+
+#sendCodeBtn:hover {
+  background-color: var(--color-primary-darker);
+  transform: translateY(-2px);
+  box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.1);
+}
+
+#sendCodeBtn:active {
+  transform: translateY(0);
+}
+
+#sendCodeBtn:disabled {
+  background-color: #ccc; /* Simple disabled style */
+  cursor: not-allowed;
+}
+
+/* Verification Section */
+#verification-section {
+  margin-top: 2.5rem; /* Match existing form-group margin-bottom */
+  padding: 2rem;
+  border: 1px solid #eee;
+  border-radius: 0.8rem; /* Match existing input border-radius */
+  background-color: var(--color-light);
+}
+
+#verification-section .form-group {
+  margin-bottom: 1.5rem; /* Adjust as needed */
+}
+
+#verification-section label {
+  display: block;
+  font-size: 1.4rem;
+  font-weight: 500;
+  margin-bottom: 0.8rem;
+  color: var(--color-dark);
+}
+
+#verification-section #verificationCode {
+  width: 100%;
+  padding: 1.5rem; /* Match existing input padding */
+  font-size: 1.6rem; /* Match existing input font-size */
+  font-family: inherit;
+  color: inherit;
+  border: 1px solid #ddd;
+  border-radius: 0.8rem; /* Match existing input border-radius */
+  transition: all 0.3s;
+  background-color: var(--color-light);
+  margin-top: 1rem; /* Match existing input margin-top */
+}
+
+#verification-section #verificationCode:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 0.4rem var(--color-primary-opacity);
+}
+
+#verification-section #verifyCodeBtn {
+  width: 100%;
+  padding: 1.5rem; /* Match existing button padding */
+  font-size: 1.6rem; /* Match existing button font-size */
+  font-weight: 500;
+  color: var(--color-white);
+  background-color: var(--color-primary);
+  border: none;
+  border-radius: 0.8rem; /* Match existing button border-radius */
+  cursor: pointer;
+  transition: all 0.3s;
+  margin-top: 1rem; /* Match existing button margin-top */
+}
+
+#verification-section #verifyCodeBtn:hover {
+  background-color: var(--color-primary-darker);
+  transform: translateY(-2px);
+  box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.1);
+}
+
+#verification-section #verifyCodeBtn:active {
+  transform: translateY(0);
+}
+
+#verification-section .error-message {
+  color: #e74c3c;
+  font-size: 1.2rem;
+  margin-top: 0.5rem;
+}
+
+#recaptcha-container {
+  margin-top: 1rem;
+  margin-bottom: 1.5rem;
+}

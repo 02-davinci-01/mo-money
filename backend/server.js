@@ -210,6 +210,47 @@ app.post("/api/users/login", async (req, res) => {
       return res.status(401).json({ message: "Invalid credentials" });
     }
 
+    // --- Modification for 2FA ---
+    // Instead of directly issuing a token, indicate that phone verification is needed
+    user.needsPhoneVerification = true; // Add a flag to the user object
+    await user.save(); // Save the user with the flag
+
+    console.log("Username/PIN login successful. Phone verification required.");
+    res.status(200).json({
+      message: "Phone verification required",
+      // You might include a temporary identifier here if needed for your frontend
+      // but do NOT send the final token yet.
+    });
+  } catch (error) {
+    console.error("Login error:", error);
+    res.status(500).json({ message: "Error logging in" });
+  }
+});
+
+app.post("/api/login-final", async (req, res) => {
+  const { uid } = req.body;
+
+  try {
+    // Find the user by firebaseUid
+    const user = await User.findOne({ firebaseUid: uid });
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    // Check if the user needs phone verification
+    if (!user.needsPhoneVerification) {
+      return res
+        .status(400)
+        .json({
+          message: "Phone verification not required or already completed",
+        });
+    }
+
+    // Clear the phone verification flag
+    user.needsPhoneVerification = false;
+    await user.save();
+
     // Create token
     const token = jwt.sign(
       { id: user._id },
@@ -217,7 +258,7 @@ app.post("/api/users/login", async (req, res) => {
       { expiresIn: "30d" }
     );
 
-    console.log("Login successful. Generated token:", token);
+    console.log("Final login successful. Generated token:", token);
     res.status(200).json({
       message: "Login successful",
       token,
@@ -228,8 +269,8 @@ app.post("/api/users/login", async (req, res) => {
       },
     });
   } catch (error) {
-    console.error("Login error:", error);
-    res.status(500).json({ message: "Error logging in" });
+    console.error("Final login error:", error);
+    res.status(500).json({ message: "Error finalizing login" });
   }
 });
 

@@ -42,6 +42,9 @@ let categoryChart = null;
 
 /////////////////////////////////////////////////
 // Utility Functions
+//just updating the logging date
+const logDate = new Date().toLocaleDateString();
+labelDate.textContent = logDate;
 
 // Fix for the displayMovements function
 const displayMovements = function (movements, dates, categories, sort = false) {
