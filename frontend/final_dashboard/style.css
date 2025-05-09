@@ -298,6 +298,43 @@ nav {
   color: #333;
 }
 
+/* Add Transaction Operation */
+.operation--add-transaction {
+  background-image: linear-gradient(to top left, #4dabf7, #228be6);
+}
+
+.form--add-transaction {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr 1fr;
+  grid-template-rows: auto auto;
+  gap: 0.4rem 1rem;
+}
+
+.form--add-transaction .form__btn--add-transaction {
+  grid-column: span 1;
+  grid-row: 1;
+}
+
+.form--add-transaction .form__input {
+  padding: 0.5rem;
+}
+
+.form--add-transaction select.form__input {
+  background-position: right 0.5rem center;
+  background-repeat: no-repeat;
+  background-size: 1rem;
+  padding-right: 2rem;
+  cursor: pointer;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+}
+
+.form--add-transaction .form__label {
+  grid-row: 2;
+}
+
+/* Other Operations */
 .operation--transfer {
   background-image: linear-gradient(to top left, #ffb003, #ffcb03);
 }
@@ -566,6 +603,17 @@ h2 {
   background-color: #3867d6;
 }
 
+/* Success Animation for Add Transaction */
+.transaction-success-animation {
+  animation: pulse 0.5s ease-in-out;
+}
+
+@keyframes pulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+  100% { transform: scale(1); }
+}
+
 @keyframes slideIn {
   from {
     transform: translateX(100%);
@@ -597,7 +645,7 @@ h2 {
   }
 
   .money-personality__content {
-    grid-template-columns: 1fr;
+    flex-direction: column;
     text-align: center;
   }
 
@@ -607,5 +655,50 @@ h2 {
 
   .ai-insights__analysis {
     grid-template-columns: 1fr;
+  }
+  
+  .form--add-transaction {
+    grid-template-columns: 1fr 1fr;
+  }
+  
+  .form--add-transaction .form__btn--add-transaction {
+    grid-column: span 1;
+    grid-row: 3;
+  }
+  
+  .form--add-transaction .form__label:nth-of-type(3),
+  .form--add-transaction .form__label:nth-of-type(4) {
+    grid-row: 4;
+  }
+}
+
+/* Additional Responsive Design for small screens */
+@media (max-width: 480px) {
+  html {
+    font-size: 50%;
+  }
+  
+  .main-content {
+    flex-direction: column;
+  }
+  
+  .charts {
+    grid-template-columns: 1fr;
+  }
+  
+  .form--add-transaction {
+    grid-template-columns: 1fr;
+  }
+  
+  .form--add-transaction .form__btn--add-transaction {
+    grid-column: 1;
+    grid-row: 5;
+  }
+  
+  .form--add-transaction .form__label:nth-of-type(1),
+  .form--add-transaction .form__label:nth-of-type(2),
+  .form--add-transaction .form__label:nth-of-type(3),
+  .form--add-transaction .form__label:nth-of-type(4) {
+    grid-row: auto;
   }
 }

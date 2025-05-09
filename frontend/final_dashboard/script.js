@@ -3,6 +3,12 @@
 
 /////////////////////////////////////////////////
 // Elements
+const btnTransaction = document.querySelector('.form__btn--transaction');
+const inputTransactionAmount = document.querySelector('.form__input--amount');
+const inputTransactionCategory = document.querySelector(
+  '.form__input--category'
+);
+
 const labelWelcome = document.querySelector('.welcome');
 const labelDate = document.querySelector('.date');
 const labelBalance = document.querySelector('.balance__value');
@@ -303,38 +309,45 @@ const handleTransfer = async function(e) {
   }
 };
 
-const handleLoan = async function(e) {
+const handleTransaction = async function (e) {
   e.preventDefault();
-  const amount = +inputLoanAmount.value;
+  const amount = +inputTransactionAmount.value;
+  const category = inputTransactionCategory.value;
 
-  if (amount <= 0) {
+  if (amount === 0) {
     alert('Please enter a valid amount');
     return;
   }
 
   try {
-    const response = await fetch('https://mo-money-sal2.onrender.com/api/transactions/loan', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${localStorage.getItem('token')}`
-      },
-      body: JSON.stringify({ amount })
-    });
-    console.log('Full response object:', response);
+    const response = await fetch(
+      'https://mo-money-sal2.onrender.com/api/transactions/add',
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${localStorage.getItem('token')}`,
+        },
+        body: JSON.stringify({
+          amount,
+          category,
+        }),
+      }
+    );
 
     if (!response.ok) {
-      throw new Error('Loan request failed');
+      throw new Error('Transaction failed');
     }
 
     const data = await response.json();
-    console.log('Loan response:', data);
+    console.log('Transaction response:', data);
     updateUI(data.user);
-    inputLoanAmount.value = '';
+    inputTransactionAmount.value = '';
+    // Reset the select to the first option
+    inputTransactionCategory.selectedIndex = 0;
   } catch (error) {
-    console.log('Loan response:', data);
-    console.error('Loan error:', error);
-    alert(error.message || 'Loan request failed');
+    console.error('Transaction error:', error);
+    alert(error.message || 'Transaction failed');
   }
 };
 
@@ -483,12 +496,13 @@ const initApp = async () => {
     updateUI(userData);
 
     // Add event listeners
+    
     document
       .querySelector('.form--transfer')
       .addEventListener('submit', handleTransfer);
     document
-      .querySelector('.form--loan')
-      .addEventListener('submit', handleLoan);
+      .querySelector('.form--transaction')
+      .addEventListener('submit', handleTransaction);
     document
       .querySelector('.form--close')
       .addEventListener('submit', handleCloseAccount);

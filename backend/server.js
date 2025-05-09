@@ -542,51 +542,59 @@ app.post('/api/transactions/transfer', auth, async (req, res) => {
   }
 });
 
-app.post('/api/transactions/loan', auth, async (req, res) => {
+app.post("/api/transactions/add", auth, async (req, res) => {
   try {
-    const { amount } = req.body;
+    const { amount, category } = req.body;
     const userId = req.user.id;
 
-    console.log('Loan request:', { userId, amount });
+    console.log("Transaction request:", { userId, amount, category });
 
-    // Validate amount
-    if (!amount || amount <= 0) {
-      return res.status(400).json({ message: 'Invalid loan amount' });
+    // Validate amount and category
+    if (amount === 0) {
+      return res.status(400).json({ message: "Invalid transaction amount" });
+    }
+
+    // Validate the category
+    const validCategories = [
+      "food",
+      "entertainment",
+      "health",
+      "travel",
+      "shopping",
+      "transfer",
+      "salary",
+      "loan",
+    ];
+    if (!validCategories.includes(category)) {
+      return res.status(400).json({ message: "Invalid transaction category" });
     }
 
     // Find the user
     const user = await User.findById(userId);
 
     if (!user) {
-      console.log('User not found:', userId);
-      return res.status(404).json({ message: 'User not found' });
+      console.log("User not found:", userId);
+      return res.status(404).json({ message: "User not found" });
     }
 
-    // Calculate current balance
-    const currentBalance = user.movements.reduce((acc, mov) => acc + mov, 0);
-
-    // Check if the user has at least 10% of the requested loan amount
-    const requiredBalance = amount * 0.1;
-    if (currentBalance < requiredBalance) {
-      return res.status(400).json({
-        message: `Loan request denied. You need at least ₹${requiredBalance} in your account to request a loan of ₹${amount}.`,
-      });
-    }
-
-    // Approve the loan and update the user's account
-    const loanDate = new Date().toISOString();
+    // Add the transaction to the user's account
+    const transactionDate = new Date().toISOString();
     user.movements.push(amount);
-    user.movementsDates.push(loanDate);
-    user.categories.push('loan'); // Or 'deposit' depending on how you categorize loans
+    user.movementsDates.push(transactionDate);
+    user.categories.push(category);
     await user.save();
 
     // Force a fresh read from the database
     const updatedUser = await User.findById(userId).lean();
-    const updatedBalance = updatedUser.movements.reduce((acc, mov) => acc + mov, 0);
+    const updatedBalance = updatedUser.movements.reduce(
+      (acc, mov) => acc + mov,
+      0
+    );
 
-    console.log('Loan approved:', {
+    console.log("Transaction added:", {
       username: updatedUser.username,
-      loanAmount: amount,
+      amount: amount,
+      category: category,
       newBalance: updatedBalance,
       movements: updatedUser.movements,
       lastMovement: updatedUser.movements[updatedUser.movements.length - 1],
@@ -594,7 +602,7 @@ app.post('/api/transactions/loan', auth, async (req, res) => {
 
     // Return the updated user data
     res.status(200).json({
-      message: 'Loan request approved',
+      message: "Transaction added successfully",
       user: {
         id: updatedUser._id,
         owner: updatedUser.owner,
@@ -607,8 +615,8 @@ app.post('/api/transactions/loan', auth, async (req, res) => {
       },
     });
   } catch (error) {
-    console.error('Loan request error:', error);
-    res.status(500).json({ message: 'Error processing loan request' });
+    console.error("Transaction error:", error);
+    res.status(500).json({ message: "Error processing transaction" });
   }
 });
 
