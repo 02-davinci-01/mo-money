@@ -312,7 +312,7 @@ const handleTransfer = async function(e) {
 const handleTransaction = async function (e) {
   e.preventDefault();
   const amount = +inputTransactionAmount.value;
-  const category = inputTransactionCategory.value;
+  const category = inputTransactionCategory.value.toLowerCase();
 
   if (amount === 0) {
     alert('Please enter a valid amount');

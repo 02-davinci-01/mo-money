@@ -34,7 +34,8 @@ nav {
   margin-bottom: 2rem;
 }
 
-.nav-left, .nav-right {
+.nav-left,
+.nav-right {
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
@@ -299,27 +300,27 @@ nav {
 }
 
 /* Add Transaction Operation */
-.operation--add-transaction {
+.operation--transaction {
   background-image: linear-gradient(to top left, #4dabf7, #228be6);
 }
 
-.form--add-transaction {
+.form--transaction {
   display: grid;
   grid-template-columns: 1fr 1fr 1fr 1fr;
   grid-template-rows: auto auto;
   gap: 0.4rem 1rem;
 }
 
-.form--add-transaction .form__btn--add-transaction {
+.form--transaction .form__btn--transaction {
   grid-column: span 1;
   grid-row: 1;
 }
 
-.form--add-transaction .form__input {
+.form--transaction .form__input {
   padding: 0.5rem;
 }
 
-.form--add-transaction select.form__input {
+.form--transaction select.form__input {
   background-position: right 0.5rem center;
   background-repeat: no-repeat;
   background-size: 1rem;
@@ -330,7 +331,7 @@ nav {
   appearance: none;
 }
 
-.form--add-transaction .form__label {
+.form--transaction .form__label {
   grid-row: 2;
 }
 
@@ -365,9 +366,11 @@ h2 {
 .form.form--loan {
   grid-template-columns: 2.5fr 1fr 2.5fr;
 }
+
 .form__label--loan {
   grid-row: 2;
 }
+
 /* End exceptions */
 
 .form__input {
@@ -479,8 +482,13 @@ h2 {
 }
 
 @keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+  0% {
+    transform: rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(360deg);
+  }
 }
 
 .ai-insights__content {
@@ -570,7 +578,7 @@ h2 {
 }
 
 .recommendations-list li::before {
-  content: "•";
+  content: '•';
   color: #39b385;
   position: absolute;
   left: 0;
@@ -609,9 +617,17 @@ h2 {
 }
 
 @keyframes pulse {
-  0% { transform: scale(1); }
-  50% { transform: scale(1.05); }
-  100% { transform: scale(1); }
+  0% {
+    transform: scale(1);
+  }
+
+  50% {
+    transform: scale(1.05);
+  }
+
+  100% {
+    transform: scale(1);
+  }
 }
 
 @keyframes slideIn {
@@ -619,6 +635,7 @@ h2 {
     transform: translateX(100%);
     opacity: 0;
   }
+
   to {
     transform: translateX(0);
     opacity: 1;
@@ -630,6 +647,7 @@ h2 {
     transform: translateX(0);
     opacity: 1;
   }
+
   to {
     transform: translateX(100%);
     opacity: 0;
@@ -656,18 +674,18 @@ h2 {
   .ai-insights__analysis {
     grid-template-columns: 1fr;
   }
-  
-  .form--add-transaction {
+
+  .form--transaction {
     grid-template-columns: 1fr 1fr;
   }
-  
-  .form--add-transaction .form__btn--add-transaction {
+
+  .form--transaction .form__btn--transaction {
     grid-column: span 1;
     grid-row: 3;
   }
-  
-  .form--add-transaction .form__label:nth-of-type(3),
-  .form--add-transaction .form__label:nth-of-type(4) {
+
+  .form--transaction .form__label:nth-of-type(3),
+  .form--transaction .form__label:nth-of-type(4) {
     grid-row: 4;
   }
 }
@@ -677,28 +695,28 @@ h2 {
   html {
     font-size: 50%;
   }
-  
+
   .main-content {
     flex-direction: column;
   }
-  
+
   .charts {
     grid-template-columns: 1fr;
   }
-  
-  .form--add-transaction {
+
+  .form--transaction {
     grid-template-columns: 1fr;
   }
-  
-  .form--add-transaction .form__btn--add-transaction {
+
+  .form--transaction .form__btn--transaction {
     grid-column: 1;
     grid-row: 5;
   }
-  
-  .form--add-transaction .form__label:nth-of-type(1),
-  .form--add-transaction .form__label:nth-of-type(2),
-  .form--add-transaction .form__label:nth-of-type(3),
-  .form--add-transaction .form__label:nth-of-type(4) {
+
+  .form--transaction .form__label:nth-of-type(1),
+  .form--transaction .form__label:nth-of-type(2),
+  .form--transaction .form__label:nth-of-type(3),
+  .form--transaction .form__label:nth-of-type(4) {
     grid-row: auto;
   }
 }
