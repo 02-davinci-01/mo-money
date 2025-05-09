@@ -379,9 +379,9 @@ const handleTransaction = async function (e) {
     e.preventDefault();
 
     const amount2 = document.querySelector('.form__input--amount').value;
-    const category = document.querySelector('.form__input--category').value;
+    const category2 = document.querySelector('.form__input--category').value;
 
-    if (amount2 && category) {
+    if (amount2 && category2) {
       // Here you would typically add the transaction to your data model
       // For demo purposes, we'll just show the success animation
       showTransactionSuccess();
