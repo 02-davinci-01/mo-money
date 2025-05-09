@@ -39,6 +39,8 @@ const inputClosePin = document.querySelector('.form__input--pin');
 let sorted = false;
 let movementsChart = null;
 let categoryChart = null;
+let currentUser = null;
+let timer;
 
 /////////////////////////////////////////////////
 // Utility Functions
@@ -46,6 +48,20 @@ let categoryChart = null;
 // Fix for the displayMovements function
 const displayMovements = function (movements, dates, categories, sort = false) {
   containerMovements.innerHTML = '';
+
+  // Ensure all parameters are valid arrays before proceeding
+  if (
+    !Array.isArray(movements) ||
+    !Array.isArray(dates) ||
+    !Array.isArray(categories)
+  ) {
+    console.error('Invalid parameters for displayMovements:', {
+      movements,
+      dates,
+      categories,
+    });
+    return;
+  }
 
   // Create a copy of the arrays to avoid modifying the original data
   console.log(movements, dates, categories);
@@ -58,7 +74,7 @@ const displayMovements = function (movements, dates, categories, sort = false) {
     const combined = movs.map((mov, i) => ({
       amount: mov,
       date: movDates[i],
-      category: movCategories[i]
+      category: movCategories[i],
     }));
     combined.sort((a, b) => a.amount - b.amount);
     movs.length = 0;
@@ -73,14 +89,14 @@ const displayMovements = function (movements, dates, categories, sort = false) {
 
   // Define category colors
   const categoryColors = {
-    'salary': '#39b385',
-    'shopping': '#ffb003',
-    'food': '#ffcb03',
-    'entertainment': '#e52a5a',
-    'transport': '#ff585f',
-    'transfer': '#9be15d',
-    'loan': '#39b385',
-    'uncategorized': '#666'
+    salary: '#39b385',
+    shopping: '#ffb003',
+    food: '#ffcb03',
+    entertainment: '#e52a5a',
+    transport: '#ff585f',
+    transfer: '#9be15d',
+    loan: '#39b385',
+    uncategorized: '#666',
   };
 
   // Display movements in reverse chronological order
@@ -89,11 +105,14 @@ const displayMovements = function (movements, dates, categories, sort = false) {
     const type = mov > 0 ? 'deposit' : 'withdrawal';
     const date = new Date(movDates[i]).toLocaleDateString();
     const category = movCategories[i] || 'uncategorized';
-    const categoryColor = categoryColors[category.toLowerCase()] || categoryColors.uncategorized;
+    const categoryColor =
+      categoryColors[category.toLowerCase()] || categoryColors.uncategorized;
 
     const html = `
       <div class="movements__row">
-        <div class="movements__type movements__type--${type}">${movs.length - i} ${type}</div>
+        <div class="movements__type movements__type--${type}">${
+      movs.length - i
+    } ${type}</div>
         <div class="movements__date">${date}</div>
         <div class="movements__category" style="background-color: ${categoryColor}20; border-color: ${categoryColor}40; color: ${categoryColor}">${category}</div>
         <div class="movements__value">${mov}₹</div>
@@ -103,6 +122,7 @@ const displayMovements = function (movements, dates, categories, sort = false) {
     containerMovements.insertAdjacentHTML('beforeend', html);
   }
 };
+
 const calcDisplayBalance = function (movements) {
   const balance = movements.reduce((acc, mov) => acc + mov, 0);
   labelBalance.textContent = `${balance}₹`;
@@ -128,28 +148,34 @@ const calcDisplaySummary = function (movements, interestRate) {
   labelSumInterest.textContent = `${interest}₹`;
 };
 
-const updateUserInfo = function(account) {
-  document.querySelector('.user-name').textContent = account.owner.split(' ')[0];
+const updateUserInfo = function (account) {
+  document.querySelector('.user-name').textContent =
+    account.owner.split(' ')[0];
   document.querySelector('.acc-number').textContent = account.username;
-  document.querySelector('.login-time').textContent = new Date().toLocaleTimeString();
+  document.querySelector('.login-time').textContent =
+    new Date().toLocaleTimeString();
 };
 
 // Initialize charts
-const initCharts = function() {
+const initCharts = function () {
   // Movements Chart
-  const movementsCtx = document.getElementById('movementsChart').getContext('2d');
+  const movementsCtx = document
+    .getElementById('movementsChart')
+    .getContext('2d');
   movementsChart = new Chart(movementsCtx, {
     type: 'line',
     data: {
       labels: [],
-      datasets: [{
-        label: 'Balance Over Time',
-        data: [],
-        borderColor: '#39b385',
-        tension: 0.4,
-        fill: true,
-        backgroundColor: 'rgba(57, 179, 133, 0.1)'
-      }]
+      datasets: [
+        {
+          label: 'Balance Over Time',
+          data: [],
+          borderColor: '#39b385',
+          tension: 0.4,
+          fill: true,
+          backgroundColor: 'rgba(57, 179, 133, 0.1)',
+        },
+      ],
     },
     options: {
       responsive: true,
@@ -158,16 +184,16 @@ const initCharts = function() {
           display: true,
           text: 'Balance History',
           font: {
-            size: 16
-          }
-        }
+            size: 16,
+          },
+        },
       },
       scales: {
         y: {
-          beginAtZero: true
-        }
-      }
-    }
+          beginAtZero: true,
+        },
+      },
+    },
   });
 
   // Category Chart
@@ -176,17 +202,19 @@ const initCharts = function() {
     type: 'doughnut',
     data: {
       labels: [],
-      datasets: [{
-        data: [],
-        backgroundColor: [
-          '#39b385',
-          '#ffb003',
-          '#ffcb03',
-          '#e52a5a',
-          '#ff585f',
-          '#9be15d'
-        ]
-      }]
+      datasets: [
+        {
+          data: [],
+          backgroundColor: [
+            '#39b385',
+            '#ffb003',
+            '#ffcb03',
+            '#e52a5a',
+            '#ff585f',
+            '#9be15d',
+          ],
+        },
+      ],
     },
     options: {
       responsive: true,
@@ -195,22 +223,27 @@ const initCharts = function() {
           display: true,
           text: 'Spending by Category',
           font: {
-            size: 16
-          }
-        }
-      }
-    }
+            size: 16,
+          },
+        },
+      },
+    },
   });
 };
 
 // Update charts with new data
-const updateCharts = function(userData) {
+const updateCharts = function (userData) {
   // Update movements chart
-  const dates = userData.movementsDates.map(date => new Date(date).toLocaleDateString());
-  const balanceData = userData.movements.reduce((acc, mov, i) => {
-    acc.push(acc[i] + mov);
-    return acc;
-  }, [0]);
+  const dates = userData.movementsDates.map(date =>
+    new Date(date).toLocaleDateString()
+  );
+  const balanceData = userData.movements.reduce(
+    (acc, mov, i) => {
+      acc.push(acc[i] + mov);
+      return acc;
+    },
+    [0]
+  );
 
   movementsChart.data.labels = dates;
   movementsChart.data.datasets[0].data = balanceData;
@@ -265,9 +298,53 @@ function showTransactionSuccess() {
   }, 100);
 }
 
-const updateUI = function(userData) {
+// Logout timer function
+const startLogoutTimer = function () {
+  // Clear any existing timer
+  if (timer) clearInterval(timer);
+
+  // Set time to 5 minutes (300 seconds)
+  let time = 300;
+
+  // Function to update the timer display
+  const tick = function () {
+    const min = String(Math.trunc(time / 60)).padStart(2, '0');
+    const sec = String(time % 60).padStart(2, '0');
+
+    // Display time in the UI
+    labelTimer.textContent = `${min}:${sec}`;
+
+    // When timer reaches 0, log out the user
+    if (time === 0) {
+      clearInterval(timer);
+      // Reset UI and logout
+      containerApp.style.opacity = 0;
+      localStorage.removeItem('token');
+      localStorage.removeItem('userData');
+      window.location.href = 'https://mo-money-sal2.onrender.com/login.html';
+    }
+
+    // Decrease by 1 second
+    time--;
+  };
+
+  // Call the tick function immediately and then every second
+  tick();
+  timer = setInterval(tick, 1000);
+
+  return timer;
+};
+
+const updateUI = function (userData) {
+  // Store the user data for use in sort function
+  currentUser = userData;
+
   // Display movements
-  displayMovements(userData.movements, userData.movementsDates, userData.categories);
+  displayMovements(
+    userData.movements,
+    userData.movementsDates,
+    userData.categories
+  );
 
   // Display balance
   calcDisplayBalance(userData.movements);
@@ -280,12 +357,17 @@ const updateUI = function(userData) {
 
   // Update user info
   updateUserInfo(userData);
+
+  // Reset timer
+  startLogoutTimer();
 };
 
-const updateMoneyPersonality = function(personalityType) {
+const updateMoneyPersonality = function (personalityType) {
   const personalityImage = document.getElementById('personalityImage');
   const personalityTypeElement = document.getElementById('personalityType');
-  const personalityDescription = document.getElementById('personalityDescription');
+  const personalityDescription = document.getElementById(
+    'personalityDescription'
+  );
 
   // Update image source
   personalityImage.src = `money_personality/${personalityType.toLowerCase()}.png`;
@@ -295,19 +377,25 @@ const updateMoneyPersonality = function(personalityType) {
 
   // Update description based on personality type
   const descriptions = {
-    strategeist: 'You are a strategic planner who carefully considers financial decisions. You excel at long-term planning and making calculated investments.',
-    stockpiler: 'You are a cautious saver who prioritizes building a strong financial safety net. You prefer stability and security in your financial choices.',
-    socialite: 'You are a social spender who enjoys sharing experiences with others. You value relationships and experiences over material possessions.',
-    scholar: 'You are a knowledge-driven spender who invests in learning and personal growth. You make informed decisions based on research and analysis.'
+    strategeist:
+      'You are a strategic planner who carefully considers financial decisions. You excel at long-term planning and making calculated investments.',
+    stockpiler:
+      'You are a cautious saver who prioritizes building a strong financial safety net. You prefer stability and security in your financial choices.',
+    socialite:
+      'You are a social spender who enjoys sharing experiences with others. You value relationships and experiences over material possessions.',
+    scholar:
+      'You are a knowledge-driven spender who invests in learning and personal growth. You make informed decisions based on research and analysis.',
   };
 
-  personalityDescription.textContent = descriptions[personalityType.toLowerCase()] || 'Your spending personality has been analyzed.';
+  personalityDescription.textContent =
+    descriptions[personalityType.toLowerCase()] ||
+    'Your spending personality has been analyzed.';
 };
 
 /////////////////////////////////////////////////
 // Event Handlers
 
-const handleTransfer = async function(e) {
+const handleTransfer = async function (e) {
   e.preventDefault();
   const amount = +inputTransferAmount.value;
   const receiverUsername = inputTransferTo.value;
@@ -318,17 +406,20 @@ const handleTransfer = async function(e) {
   }
 
   try {
-    const response = await fetch('https://mo-money-sal2.onrender.com/api/transactions/transfer', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${localStorage.getItem('token')}`
-      },
-      body: JSON.stringify({
-        receiverUsername,
-        amount
-      })
-    });
+    const response = await fetch(
+      'https://mo-money-sal2.onrender.com/api/transactions/transfer',
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${localStorage.getItem('token')}`,
+        },
+        body: JSON.stringify({
+          receiverUsername,
+          amount,
+        }),
+      }
+    );
 
     if (!response.ok) {
       throw new Error('Transfer failed');
@@ -398,16 +489,19 @@ const handleTransaction = async function (e) {
   }
 };
 
-const handleCloseAccount = async function(e) {
+const handleCloseAccount = async function (e) {
   e.preventDefault();
 
   try {
-    const response = await fetch('https://mo-money-sal2.onrender.com/api/close-account', {
-      method: 'DELETE',
-      headers: {
-        'Authorization': `Bearer ${localStorage.getItem('token')}`
+    const response = await fetch(
+      'https://mo-money-sal2.onrender.com/api/close-account',
+      {
+        method: 'DELETE',
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('token')}`,
+        },
       }
-    });
+    );
 
     if (!response.ok) {
       throw new Error('Failed to close account');
@@ -422,16 +516,29 @@ const handleCloseAccount = async function(e) {
   }
 };
 
-const handleSort = function(e) {
+const handleSort = function (e) {
   e.preventDefault();
-  const userData = JSON.parse(localStorage.getItem('userData'));
-  if (userData) {
-    displayMovements(userData.movements, userData.movementsDates, userData.categories, !sorted);
+
+  // Use the currentUser object that's kept in memory
+  if (
+    currentUser &&
+    Array.isArray(currentUser.movements) &&
+    Array.isArray(currentUser.movementsDates) &&
+    Array.isArray(currentUser.categories)
+  ) {
+    displayMovements(
+      currentUser.movements,
+      currentUser.movementsDates,
+      currentUser.categories,
+      !sorted
+    );
     sorted = !sorted;
+  } else {
+    console.error('Cannot sort: Current user data is not available or invalid');
   }
 };
 
-const handleAIAnalysis = async function(e) {
+const handleAIAnalysis = async function (e) {
   e.preventDefault();
 
   // Show loading state
@@ -441,11 +548,14 @@ const handleAIAnalysis = async function(e) {
 
   try {
     // Fetch fresh user data from server
-    const userResponse = await fetch('https://mo-money-sal2.onrender.com/api/user', {
-      headers: {
-        'Authorization': `Bearer ${localStorage.getItem('token')}`
+    const userResponse = await fetch(
+      'https://mo-money-sal2.onrender.com/api/user',
+      {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('token')}`,
+        },
       }
-    });
+    );
 
     if (!userResponse.ok) {
       throw new Error('Failed to fetch user data');
@@ -453,7 +563,12 @@ const handleAIAnalysis = async function(e) {
 
     const userData = await userResponse.json();
     console.log(userData);
-    if (!userData.user || !userData.user.movements || !userData.user.movementsDates || !userData.user.categories) {
+    if (
+      !userData.user ||
+      !userData.user.movements ||
+      !userData.user.movementsDates ||
+      !userData.user.categories
+    ) {
       throw new Error('Transaction data not available');
     }
 
@@ -466,16 +581,19 @@ const handleAIAnalysis = async function(e) {
       })
     );
 
-    const response = await fetch('https://mo-money-sal2.onrender.com/api/ai/analyze', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${localStorage.getItem('token')}`,
-      },
-      body: JSON.stringify({
-        transactions: transactionsToSend, // Now 'transactions' is an array
-      }),
-    });
+    const response = await fetch(
+      'https://mo-money-sal2.onrender.com/api/ai/analyze',
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${localStorage.getItem('token')}`,
+        },
+        body: JSON.stringify({
+          transactions: transactionsToSend, // Now 'transactions' is an array
+        }),
+      }
+    );
 
     if (!response.ok) {
       throw new Error('Analysis failed');
@@ -485,16 +603,15 @@ const handleAIAnalysis = async function(e) {
 
     // Update personality section
     updateMoneyPersonality(data.spenderType);
-    document.getElementById('spenderType').textContent = data.spenderDescription;
-    document.getElementById('recommendationsList').innerHTML = data.recommendations
-      .map(rec => `<li>${rec}</li>`)
-      .join('');
+    document.getElementById('spenderType').textContent =
+      data.spenderDescription;
+    document.getElementById('recommendationsList').innerHTML =
+      data.recommendations.map(rec => `<li>${rec}</li>`).join('');
     document.getElementById('spendingTrends').textContent = data.trends;
 
     // Hide loading and show content
     document.querySelector('.ai-insights__loading').style.display = 'none';
     document.querySelector('.ai-insights__content').style.display = 'block';
-
   } catch (error) {
     console.error('AI Analysis error:', error);
     alert(error.message || 'Analysis failed');
@@ -543,7 +660,7 @@ const initApp = async () => {
     updateUI(userData);
 
     // Add event listeners
-    
+
     document
       .querySelector('.form--transfer')
       .addEventListener('submit', handleTransfer);
@@ -560,7 +677,8 @@ const initApp = async () => {
   } catch (error) {
     console.error('Initialization error:', error);
     alert('Failed to load dashboard. Please try logging in again.');
-    window.location.href = 'http://localhost:3001/login.html';
+    window.location.href = 'https://mo-money-sal2.onrender.com/login.html';
   }
 };
+
 document.addEventListener('DOMContentLoaded', initApp);
