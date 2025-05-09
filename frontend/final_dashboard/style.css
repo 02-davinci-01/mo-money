@@ -304,12 +304,6 @@ nav {
   background-image: linear-gradient(to top left, #4dabf7, #228be6);
 }
 
-.form--transaction {
-  display: grid;
-  grid-template-columns: 1fr 1fr 1fr 1fr;
-  grid-template-rows: auto auto;
-  gap: 0.4rem 1rem;
-}
 
 .form--transaction .form__btn--transaction {
   grid-column: span 1;
@@ -719,4 +713,105 @@ h2 {
   .form--transaction .form__label:nth-of-type(4) {
     grid-row: auto;
   }
+}
+
+.form--transaction {
+  display: grid;
+  grid-template-columns: 2fr 1.5fr 1fr;
+  grid-template-rows: auto auto;
+  gap: 0.4rem 1rem;
+}
+
+/* This moves the button to the right */
+.form--transaction .form__btn--transaction {
+  grid-column: 3;
+  grid-row: 1;
+}
+
+/* Make the amount field larger */
+.form--transaction .form__input--amount {
+  width: 100%;
+  padding: 0.8rem 1rem;
+  font-size: 1.6rem;
+}
+
+.form__input--category {
+  width: 100%;
+  border: none;
+  background-color: rgba(255, 255, 255, 0.4);
+  font-family: inherit;
+  font-size: 1.5rem;
+  color: #333;
+  padding: 0.8rem 1rem;
+  border-radius: 0.7rem;
+  transition: all 0.3s;
+  cursor: pointer;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23333%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E");
+  background-repeat: no-repeat;
+  background-position: right 1rem center;
+  background-size: 0.8rem auto;
+  padding-right: 3rem;
+}
+
+.form__input--category:focus {
+  outline: none;
+  background-color: rgba(255, 255, 255, 0.6);
+}
+
+.form__input--category option {
+  background-color: #fff;
+  color: #333;
+  font-size: 1.4rem;
+  padding: 0.8rem;
+}
+
+/* Transition animation for successful transaction */
+@keyframes transactionSuccess {
+  0% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.05);
+    opacity: 0.9;
+    box-shadow: 0 0 15px rgba(57, 179, 133, 0.8);
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.transaction-success {
+  animation: transactionSuccess 0.5s ease-in-out;
+}
+
+/* Notification for successful transaction */
+.transaction-notification {
+  position: fixed;
+  top: 2rem;
+  right: 2rem;
+  background-color: #39b385;
+  color: white;
+  padding: 1rem 2rem;
+  border-radius: 0.5rem;
+  font-size: 1.4rem;
+  box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.2);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  transform: translateX(150%);
+  transition: transform 0.3s ease-in-out;
+}
+
+.transaction-notification.show {
+  transform: translateX(0);
+}
+
+.transaction-notification i {
+  font-size: 1.8rem;
 }

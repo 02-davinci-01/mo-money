@@ -79,27 +79,29 @@
         <!-- RIGHT SIDE - OPERATIONS -->
         <div class="operations-section">
           <!-- OPERATION: ADD TRANSACTION -->
-          <div class="operation operation--transaction">
-            <h2>Add Transaction</h2>
-            <form class="form form--transaction">
-              <select class="form__input form__input--category">
-                <option value="Salary">Salary</option>
-                <option value="Shopping">Shopping</option>
-                <option value="Food">Food</option>
-                <option value="Transportation">Transportation</option>
-                <option value="Entertainment">Entertainment</option>
-                <option value="Housing">Housing</option>
-                <option value="Utilities">Utilities</option>
-                <option value="Investment">Investment</option>
-                <option value="Other">Other</option>
-              </select>
-              <input type="number" class="form__input form__input--amount" />
-              <button class="form__btn form__btn--transaction">&rarr;</button>
-              <label class="form__label">Category</label>
-              <label class="form__label">Amount</label>
-            </form>
-          </div>
-          
+            <div class="operation operation--transaction">
+  <h2>Add Transaction</h2>
+  <form class="form form--transaction">
+    <select class="form__input form__input--category">
+      <option value="" disabled selected>Select a category</option>
+      <option value="Salary">Salary</option>
+      <option value="Shopping">Shopping</option>
+      <option value="Food">Food</option>
+      <option value="Transportation">Transportation</option>
+      <option value="Entertainment">Entertainment</option>
+      <option value="Housing">Housing</option>
+      <option value="Utilities">Utilities</option>
+      <option value="Investment">Investment</option>
+      <option value="Other">Other</option>
+    </select>
+    <input type="number" class="form__input form__input--amount" placeholder="Enter amount" />
+    <button class="form__btn form__btn--transaction">&rarr;</button>
+    <label class="form__label">Category</label>
+    <label class="form__label">Amount</label>
+  </form>
+</div>
+
+
           <!-- OPERATION: TRANSFERS -->
           <div class="operation operation--transfer">
             <h2>Transfer money</h2>
@@ -192,6 +194,10 @@
       <p class="logout-timer">
         You will be logged out in <span class="timer">05:00</span>
       </p>
+      <div class="transaction-notification">
+  <i class="fas fa-check-circle"></i>
+  <span>Transaction added successfully!</span>
+</div>
     </main>
 
     <script src="script.js"></script>

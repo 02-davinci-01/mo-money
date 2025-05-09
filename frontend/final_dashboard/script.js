@@ -231,6 +231,40 @@ const updateCharts = function(userData) {
   categoryChart.update();
 };
 
+function showTransactionSuccess() {
+  // 1. Animate the transaction form
+  const transactionForm = document.querySelector('.operation--transaction');
+  transactionForm.classList.add('transaction-success');
+
+  // Remove the animation class after it completes
+  setTimeout(() => {
+    transactionForm.classList.remove('transaction-success');
+  }, 500);
+
+  // 2. Create and show notification if it doesn't exist
+  let notification = document.querySelector('.transaction-notification');
+
+  if (!notification) {
+    notification = document.createElement('div');
+    notification.className = 'transaction-notification';
+    notification.innerHTML = `
+      <i class="fas fa-check-circle"></i>
+      <span>Transaction added successfully!</span>
+    `;
+    document.body.appendChild(notification);
+  }
+
+  // Show the notification
+  setTimeout(() => {
+    notification.classList.add('show');
+
+    // Hide the notification after 3 seconds
+    setTimeout(() => {
+      notification.classList.remove('show');
+    }, 3000);
+  }, 100);
+}
+
 const updateUI = function(userData) {
   // Display movements
   displayMovements(userData.movements, userData.movementsDates, userData.categories);
@@ -342,6 +376,19 @@ const handleTransaction = async function (e) {
     const data = await response.json();
     console.log('Transaction response:', data);
     updateUI(data.user);
+    e.preventDefault();
+
+    const amount = document.querySelector('.form__input--amount').value;
+    const category = document.querySelector('.form__input--category').value;
+
+    if (amount && category) {
+      // Here you would typically add the transaction to your data model
+      // For demo purposes, we'll just show the success animation
+      showTransactionSuccess();
+
+      // Reset form
+      document.querySelector('.form__input--amount').value = '';
+    }
     inputTransactionAmount.value = '';
     // Reset the select to the first option
     inputTransactionCategory.selectedIndex = 0;
