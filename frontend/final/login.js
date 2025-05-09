@@ -76,6 +76,20 @@ const generateRecaptcha = () => {
   });
 };
 
+const ensureFirebaseInitialized = () => {
+  if (!window.firebaseInitialized) {
+    try {
+      initializeApp(firebaseConfig);
+      window.firebaseInitialized = true;
+      console.log('Firebase initialized successfully');
+    } catch (error) {
+      console.error('Firebase initialization error:', error);
+      throw new Error('Failed to initialize Firebase');
+    }
+  }
+  return true;
+};
+
 const response = await fetch(
   'https://mo-money-sal2.onrender.com/api/users/login',
   {
