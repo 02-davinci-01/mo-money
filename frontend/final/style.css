@@ -109,13 +109,13 @@ button:focus {
   outline: none;
 }
 
-img {
+.features__img {
   transition: filter 0.5s;
 }
 
-.lazy-img {
+/* .lazy-img {
   filter: blur(20px);
-}
+} */
 
 /* NAVIGATION */
 .nav {
