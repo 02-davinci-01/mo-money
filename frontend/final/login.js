@@ -238,6 +238,7 @@ if (verifyCodeBtn) {
     }
   });
 }
+console.log(sendCodeBtn)
 
 if (sendCodeBtn) {
   sendCodeBtn.addEventListener('click', async () => {
