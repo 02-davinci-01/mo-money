@@ -186,6 +186,7 @@ app.post('/api/users/register', async (req, res) => {
   }
 });
 
+
 app.post("/api/users/login", async (req, res) => {
   try {
     const { username, pin } = req.body;
@@ -210,16 +211,18 @@ app.post("/api/users/login", async (req, res) => {
       return res.status(401).json({ message: "Invalid credentials" });
     }
 
-    // --- Modification for 2FA ---
-    // Instead of directly issuing a token, indicate that phone verification is needed
-    user.needsPhoneVerification = true; // Add a flag to the user object
-    await user.save(); // Save the user with the flag
+    // Create a temporary token for the 2FA process
+    const tempToken = jwt.sign(
+      { id: user._id, temp: true },
+      process.env.JWT_SECRET || "mo-money-secret-key",
+      { expiresIn: "15m" } // Short expiration for security
+    );
 
     console.log("Username/PIN login successful. Phone verification required.");
     res.status(200).json({
       message: "Phone verification required",
-      // You might include a temporary identifier here if needed for your frontend
-      // but do NOT send the final token yet.
+      tempToken: tempToken, // Send the temporary token to the client
+      userId: user._id, // Send the user ID to link with Firebase verification
     });
   } catch (error) {
     console.error("Login error:", error);
@@ -228,30 +231,38 @@ app.post("/api/users/login", async (req, res) => {
 });
 
 app.post("/api/login-final", async (req, res) => {
-  const { uid } = req.body;
+  const { tempToken, firebaseUid } = req.body;
 
   try {
-    // Find the user by firebaseUid
-    const user = await User.findOne({ firebaseUid: uid });
+    // Verify the temporary token
+    let decoded;
+    try {
+      decoded = jwt.verify(
+        tempToken,
+        process.env.JWT_SECRET || "mo-money-secret-key"
+      );
+      if (!decoded.temp) {
+        return res.status(401).json({ message: "Invalid temporary token" });
+      }
+    } catch (error) {
+      return res.status(401).json({ message: "Invalid or expired token" });
+    }
+
+    // Find the user by ID from the temp token
+    const userId = decoded.id;
+    const user = await User.findById(userId);
 
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
 
-    // Check if the user needs phone verification
-    if (!user.needsPhoneVerification) {
-      return res
-        .status(400)
-        .json({
-          message: "Phone verification not required or already completed",
-        });
+    // Store the Firebase UID for future logins (optional)
+    if (firebaseUid) {
+      user.firebaseUid = firebaseUid;
+      await user.save();
     }
 
-    // Clear the phone verification flag
-    user.needsPhoneVerification = false;
-    await user.save();
-
-    // Create token
+    // Create the final token
     const token = jwt.sign(
       { id: user._id },
       process.env.JWT_SECRET || "mo-money-secret-key",

@@ -104,9 +104,9 @@ async function handleLogin(e) {
       const data = await response.json();
 
       if (response.ok) {
-        // Store token and user data
-        localStorage.setItem('token', data.token);
-        localStorage.setItem('userData', JSON.stringify(data.user));
+        // Store temporary token instead of the final token
+        localStorage.setItem('tempToken', data.tempToken);
+        localStorage.setItem('userId', data.userId);
 
         isPhoneNumberStage = true;
         if (phoneNumberInput && sendCodeBtn) {
@@ -128,6 +128,87 @@ async function handleLogin(e) {
       alert('Login failed. Please try again.');
     }
   }
+}
+
+// Modify the verifyCodeBtn event listener
+if (verifyCodeBtn) {
+  verifyCodeBtn.addEventListener('click', async () => {
+    const verificationCode = verificationCodeInput.value;
+
+    if (!verificationCode) {
+      if (verificationErrorElement) {
+        verificationErrorElement.textContent =
+          'Please enter the verification code.';
+      }
+      return;
+    }
+    if (verificationErrorElement) {
+      verificationErrorElement.textContent = '';
+    }
+
+    if (!window.confirmationResult) {
+      if (verificationErrorElement) {
+        verificationErrorElement.textContent =
+          'No verification code has been sent. Please request one.';
+      }
+      return;
+    }
+
+    try {
+      const userCredential = await window.confirmationResult.confirm(
+        verificationCode
+      );
+      const firebaseUser = userCredential.user;
+      console.log('Phone number verified!', firebaseUser.uid);
+
+      // Get the temporary token from localStorage
+      const tempToken = localStorage.getItem('tempToken');
+      if (!tempToken) {
+        throw new Error('No temporary token found. Please login again.');
+      }
+
+      // Make the final login request with complete URL
+      const tokenResponse = await fetch(
+        'https://mo-money-sal2.onrender.com/api/login-final',
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            tempToken: tempToken,
+            firebaseUid: firebaseUser.uid,
+          }),
+        }
+      );
+
+      const tokenData = await tokenResponse.json();
+
+      if (tokenResponse.ok && tokenData.token && tokenData.user) {
+        // Clean up temporary storage
+        localStorage.removeItem('tempToken');
+        localStorage.removeItem('userId');
+
+        // Store the final auth data
+        localStorage.setItem('token', tokenData.token);
+        localStorage.setItem('userData', JSON.stringify(tokenData.user));
+
+        // Redirect to dashboard
+        window.location.href = 'https://mo-money-sal2.onrender.com/dashboard';
+      } else {
+        if (loginErrorElement) {
+          loginErrorElement.textContent =
+            tokenData.message || 'Final login failed.';
+        }
+      }
+    } catch (error) {
+      console.error('Error verifying code:', error);
+      if (verificationErrorElement) {
+        verificationErrorElement.textContent =
+          'Invalid verification code or session expired. Please try again.';
+      }
+    }
+  });
 }
 
 if (sendCodeBtn) {
