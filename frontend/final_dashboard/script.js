@@ -42,6 +42,7 @@ const displayMovements = function (movements, dates, categories, sort = false) {
   containerMovements.innerHTML = '';
 
   // Create a copy of the arrays to avoid modifying the original data
+  console.log(movements, dates, categories);
   const movs = movements.slice();
   const movDates = dates.slice();
   const movCategories = categories.slice();
@@ -320,15 +321,18 @@ const handleLoan = async function(e) {
       },
       body: JSON.stringify({ amount })
     });
+    console.log('Full response object:', response);
 
     if (!response.ok) {
       throw new Error('Loan request failed');
     }
 
     const data = await response.json();
-    updateUI(data);
+    console.log('Loan response:', data);
+    updateUI(data.user);
     inputLoanAmount.value = '';
   } catch (error) {
+    console.log('Loan response:', data);
     console.error('Loan error:', error);
     alert(error.message || 'Loan request failed');
   }
