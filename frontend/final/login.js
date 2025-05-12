@@ -29,7 +29,7 @@ const seedTestUsers = async () => {
 };
 
 // Seed test users when page loads
-// seedTestUsers();
+seedTestUsers();
 
 // Event Handlers
 async function handleLogin(e) {
