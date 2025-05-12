@@ -429,20 +429,24 @@ app.post('/api/seed', async (req, res) => {
 });
 
 // Close account endpoint
-app.delete('/api/close-account', auth, async (req, res) => {
+app.post("/api/logout", auth, async (req, res) => {
   try {
     const user = await User.findById(req.user.id);
     if (!user) {
-      return res.status(404).json({ message: 'User not found' });
+      return res.status(404).json({ message: "User not found" });
     }
 
-    // Delete the user account
-    await User.findByIdAndDelete(req.user.id);
+    // Instead of deleting the user, we simply return a success message
+    // This keeps all the user data in the database
+    console.log(`User ${user.username} logged out`);
 
-    res.status(200).json({ message: 'Account closed successfully' });
+    res.status(200).json({
+      message: "Logged out successfully",
+      username: user.username,
+    });
   } catch (error) {
-    console.error('Close account error:', error);
-    res.status(500).json({ message: 'Error closing account' });
+    console.error("Logout error:", error);
+    res.status(500).json({ message: "Error during logout" });
   }
 });
 

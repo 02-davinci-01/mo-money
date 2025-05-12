@@ -496,29 +496,31 @@ const handleCloseAccount = async function (e) {
   e.preventDefault();
 
   try {
+    // Changed from DELETE to POST request to a new logout endpoint
     const response = await fetch(
-      'https://mo-money-sal2.onrender.com/api/close-account',
+      'https://mo-money-sal2.onrender.com/api/logout',
       {
-        method: 'DELETE',
+        method: 'POST', // Changed from DELETE to POST
         headers: {
+          'Content-Type': 'application/json',
           Authorization: `Bearer ${localStorage.getItem('token')}`,
         },
       }
     );
 
     if (!response.ok) {
-      throw new Error('Failed to close account');
+      throw new Error('Failed to log out');
     }
 
+    // Clear local storage and redirect to login page (this part remains the same)
     localStorage.removeItem('token');
     localStorage.removeItem('userData');
-    window.location.href = 'https://mo-money-sal2.onrender.com/login.html'; // Updated URL
+    window.location.href = 'https://mo-money-sal2.onrender.com/login.html';
   } catch (error) {
-    console.error('Close account error:', error);
-    alert(error.message || 'Failed to close account');
+    console.error('Logout error:', error);
+    alert(error.message || 'Failed to log out');
   }
 };
-
 const handleSort = function (e) {
   e.preventDefault();
 
