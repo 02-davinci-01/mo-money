@@ -403,10 +403,10 @@ const handleTransfer = async function (e) {
   const amount = +inputTransferAmount.value;
   const receiverUsername = inputTransferTo.value;
 
-  if (amount <= 0 || !receiverUsername) {
-    alert('Please enter a valid amount and recipient username');
-    return;
-  }
+  // if (amount <= 0 || !receiverUsername) {
+  //   alert('Please enter a valid amount and recipient username');
+  //   return;
+  // }
 
   try {
     const response = await fetch(
