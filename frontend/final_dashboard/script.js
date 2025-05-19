@@ -400,13 +400,24 @@ const updateMoneyPersonality = function (personalityType) {
 
 const handleTransfer = async function (e) {
   e.preventDefault();
-  const amount = +inputTransferAmount.value;
+  const rawAmount = inputTransferAmount.value;
+  const amount = +rawAmount;
   const receiverUsername = inputTransferTo.value;
 
-  // if (amount <= 0 || !receiverUsername) {
-  //   alert('Please enter a valid amount and recipient username');
-  //   return;
-  // }
+  console.log('Transfer attempt:', {
+    rawAmount,
+    parsedAmount: amount,
+    isNaN: isNaN(amount),
+    isZeroOrNegative: amount <= 0,
+    receiverUsername,
+    isEmptyUsername: !receiverUsername,
+  });
+  
+
+  if (amount <= 0 || !receiverUsername) {
+    alert('Please enter a valid amount and recipient username');
+    return;
+  }
 
   try {
     const response = await fetch(
